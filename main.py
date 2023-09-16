@@ -5,6 +5,13 @@ pygame.font.init()
 
 #########################################################
 #VARIABLES
+
+#colors
+orange = (227, 174, 59)
+black = (0, 0, 0)
+white = (255, 255, 255)
+
+#game screen
 gamedis_width = 800
 gamedis_height = 600
 size = [gamedis_width, gamedis_height]
@@ -12,8 +19,7 @@ size = [gamedis_width, gamedis_height]
 #scoreboard
 scoreboard_width= 200
 scoreboard_height = 600
-orange = (227, 174, 59)
-black = (0, 0, 0)
+
 score_font_type = pygame.font.SysFont(None, 36)
 
 #snake
@@ -31,7 +37,7 @@ game_over = False
 
 #speed
 clock = pygame.time.Clock()
-snake_speed = 50
+snake_speed = 30
 
 ######################################################
 #MAKE GAME SCREEN
@@ -43,7 +49,7 @@ pygame.draw.rect(gamedis, orange, pygame.Rect(0, 0, scoreboard_width, scoreboard
 #scoreboard_surface.fill(orange)
 score_display = score_font_type.render(f'Score: {game_score}', True, orange)
 gamedis.blit(score_display, (30, 100))
-
+pygame.display.update()
 
 #make initial snake
 snake_head = pygame.image.load(snake_head_img).convert()
@@ -52,8 +58,6 @@ gamedis.blit(snake_head, (pos_x, pos_y))
 
 pygame.display.update()
 pygame.display.set_caption("Snakes eat rocks")
-
-
 
 
 #continuously run game until game_over = true (when game ends)
@@ -94,10 +98,15 @@ while not game_over:
                 score_display = score_font_type.render(f'Score: {game_score}', True, black) 
                 gamedis.blit(score_display, (30, 100))
                 pygame.display.update()
-                        
+
+    #Did snake hit wall?
+    if pos_x > gamedis_width or pos_x < 0 or pos_y > gamedis_height or pos_y < 0:
+        game_over = True
+   
+
     pos_x += pos_x_change
     pos_y += pos_y_change      
-
+ 
     #Updating Snake Head
     gamedis.blit(snake_head, (pos_x, pos_y))
     pygame.display.update()
@@ -105,7 +114,11 @@ while not game_over:
     clock.tick(snake_speed)
 
 
-
+# You Lose XD
+lose_text = score_font_type.render("RIP BOZO YOU LOSE", True, white)
+gamedis.blit(lose_text, (gamedis_width/2 + scoreboard_width / 2, gamedis_height/2))
+pygame.display.update()
+pygame.time.wait(3000)
 
 #Exiting the Game
 pygame.quit()
