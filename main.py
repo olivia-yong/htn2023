@@ -117,16 +117,16 @@ while not game_over:
 
         #Movement
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_LEFT and pos_x_change == 0:
                 pos_x_change = -snake_icon_size
                 pos_y_change = 0
-            elif event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT and pos_x_change == 0:
                 pos_x_change = snake_icon_size
                 pos_y_change = 0
-            elif event.key == pygame.K_UP:
+            elif event.key == pygame.K_UP and pos_y_change == 0:
                 pos_x_change = 0
                 pos_y_change = -snake_icon_size
-            elif event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN and pos_y_change == 0:
                 pos_x_change = 0
                 pos_y_change = snake_icon_size
             elif event.key == pygame.K_1:
