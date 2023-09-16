@@ -24,22 +24,24 @@ scoreboard_height = 600
 score_font_type = pygame.font.SysFont(None, 36)
 
 #snake
-snake_head_img = "./ASSETS/snake_head_test.png"
 pos_x = gamedis_width / 2 + scoreboard_width
 pos_y = gamedis_height / 2
 pos_x_change = 0
 pos_y_change = 0
-snake_icon_size = 10
+snake_icon_size = 10 #hey i need to edit this later but game breaks if u change it so don't change this
 snake_List = []
+snake_body_img = "./ASSETS/skin1_body.png"
+snake_tail_img = "./ASSETS/skin1_tail.png"
 
 #apples
 game_score = 0
 foodx = round(random.randrange(0, gamedis_width - snake_icon_size) / 10.0) * 10.0 + scoreboard_width
 foody = round(random.randrange(0, gamedis_height - snake_icon_size) / 10.0) * 10.0
+food_img = "./ASSETS/rock1.png"
 
 #speed
 clock = pygame.time.Clock()
-snake_speed = 30
+snake_speed = 10
 
 game_over = False
 ######################################################
@@ -57,12 +59,12 @@ score_display = score_font_type.render(f'Score: {game_score}', True, black)
 gamedis.blit(score_display, (30, 100))
 
 #make initial snake
-snake_head = pygame.image.load(snake_head_img).convert()
+snake_head = pygame.image.load(snake_body_img).convert()
 snake_head = pygame.transform.scale(snake_head, (snake_icon_size, snake_icon_size))
 gamedis.blit(snake_head, (pos_x, pos_y))
 
 pygame.display.flip()
-pygame.display.set_caption("Snakes eat rocks")
+pygame.display.set_caption("Snakewave")
 
 
 ##############################################################################################
@@ -77,12 +79,22 @@ def update_score(game_score):
 
 def update_snake(snake_List, pos_x, pos_y):
     #Draw Snake
+    cnt = 0
     for x in snake_List:
-        gamedis.blit(snake_head, (x[0], x[1]))
+        if(cnt % 2 == 0):    
+            snake_body = pygame.image.load(snake_body_img).convert()    
+        else :
+            snake_body = pygame.image.load(snake_tail_img).convert()
+        cnt += 1
+        snake_body = pygame.transform.scale(snake_body, (snake_icon_size, snake_icon_size))
+        gamedis.blit(snake_body, (x[0], x[1]))
+
     pygame.display.update()
 
 def  make_food(foodx, foody):
-    gamedis.blit(snake_head, (foodx, foody))
+    food = pygame.image.load(food_img).convert()
+    food = pygame.transform.scale(food, (snake_icon_size, snake_icon_size))
+    gamedis.blit(food, (foodx, foody))
     pygame.display.update()
     
 
