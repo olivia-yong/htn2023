@@ -27,10 +27,10 @@ score_font_type = pygame.font.SysFont(None, 36)
 snake_head_img = "./ASSETS/snake_head_test.png"
 pos_x = gamedis_width / 2 + scoreboard_width
 pos_y = gamedis_height / 2
-snake_icon_size = 10
 pos_x_change = 0
 pos_y_change = 0
-
+snake_icon_size = 10
+snake_List = []
 
 #apples
 game_score = 0
@@ -75,9 +75,10 @@ def update_score(game_score):
     gamedis.blit(score_display, (30, 100))
     pygame.display.update()
 
-def update_snake(snake_length):
-    pygame.draw.rect(gamedis, black, game_area)
-    gamedis.blit(snake_head, (pos_x, pos_y))
+def update_snake(snake_List, pos_x, pos_y):
+    #Draw Snake
+    for x in snake_List:
+        gamedis.blit(snake_head, (x[0], x[1]))
     pygame.display.update()
 
 def  make_food(foodx, foody):
@@ -131,9 +132,25 @@ while not game_over:
         break
 
     #Updating Snake Head
-    update_snake(game_score)
+    pygame.draw.rect(gamedis, black, game_area)
     make_food(foodx, foody)
-    
+    snake_Head = []
+    snake_Head.append(pos_x)
+    snake_Head.append(pos_y)
+    snake_List.append(snake_Head)
+
+    if len(snake_List) > game_score + 1:
+        del snake_List[0]
+
+
+    #Check if snake hit itself
+    for x in snake_List[:-1]:
+        if x == snake_Head:
+            game_over = True
+
+   
+    update_snake(snake_List, pos_x, pos_y)
+
     #Did snake hit food?
     if pos_x == foodx and pos_y == foody:
         foodx = round(random.randrange(0, gamedis_width - snake_icon_size) / 10.0) * 10.0 + scoreboard_width
