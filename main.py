@@ -1,4 +1,5 @@
 import pygame
+import random
 
 pygame.init()
 pygame.font.init()
@@ -24,20 +25,23 @@ score_font_type = pygame.font.SysFont(None, 36)
 
 #snake
 snake_head_img = "./ASSETS/snake_head_test.png"
-pos_x = gamedis_width / 2
+pos_x = gamedis_width / 2 + scoreboard_width
 pos_y = gamedis_height / 2
+snake_icon_size = 10
 pos_x_change = 0
 pos_y_change = 0
 
 
 #apples
 game_score = 0
-game_over = False
+foodx = round(random.randrange(0, gamedis_width - snake_icon_size) / 10.0) * 10.0 + scoreboard_width
+foody = round(random.randrange(0, gamedis_height - snake_icon_size) / 10.0) * 10.0
 
 #speed
 clock = pygame.time.Clock()
 snake_speed = 30
 
+game_over = False
 ######################################################
 #MAKE GAME SCREEN
 gamedis = pygame.display.set_mode((800, 600))
@@ -54,12 +58,32 @@ gamedis.blit(score_display, (30, 100))
 
 #make initial snake
 snake_head = pygame.image.load(snake_head_img).convert()
-snake_head = pygame.transform.scale(snake_head, (10, 10))
+snake_head = pygame.transform.scale(snake_head, (snake_icon_size, snake_icon_size))
 gamedis.blit(snake_head, (pos_x, pos_y))
 
 pygame.display.flip()
 pygame.display.set_caption("Snakes eat rocks")
 
+
+##############################################################################################
+#FUNCTIONS
+
+#update score
+def update_score(game_score): 
+    pygame.draw.rect(gamedis, orange, scoreboard)
+    score_display = score_font_type.render(f'Score: {game_score}', True, black) 
+    gamedis.blit(score_display, (30, 100))
+    pygame.display.update()
+
+def update_snake(snake_length):
+    pygame.draw.rect(gamedis, black, game_area)
+    gamedis.blit(snake_head, (pos_x, pos_y))
+    pygame.display.update()
+
+def  make_food(foodx, foody):
+    gamedis.blit(snake_head, (foodx, foody))
+    pygame.display.update()
+    
 
 #continuously run game until game_over = true (when game ends)
 while not game_over:
@@ -81,24 +105,22 @@ while not game_over:
         #Movement
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                pos_x_change = -10
+                pos_x_change = -snake_icon_size
                 pos_y_change = 0
             elif event.key == pygame.K_RIGHT:
-                pos_x_change = 10
+                pos_x_change = snake_icon_size
                 pos_y_change = 0
             elif event.key == pygame.K_UP:
                 pos_x_change = 0
-                pos_y_change = -10
+                pos_y_change = -snake_icon_size
             elif event.key == pygame.K_DOWN:
                 pos_x_change = 0
-                pos_y_change = 10
+                pos_y_change = snake_icon_size
             elif event.key == pygame.K_1:
                 score_change = True
                 game_score += 1
-                pygame.draw.rect(gamedis, orange, scoreboard)
-                score_display = score_font_type.render(f'Score: {game_score}', True, black) 
-                gamedis.blit(score_display, (30, 100))
-                pygame.display.update()
+                update_score(game_score)
+                
 
     #Did snake hit wall?
     pos_x += pos_x_change
@@ -109,10 +131,17 @@ while not game_over:
         break
 
     #Updating Snake Head
-    pygame.draw.rect(gamedis, black, game_area)
-    gamedis.blit(snake_head, (pos_x, pos_y))
-    pygame.display.update()
-
+    update_snake(game_score)
+    make_food(foodx, foody)
+    
+    #Did snake hit food?
+    if pos_x == foodx and pos_y == foody:
+        foodx = round(random.randrange(0, gamedis_width - snake_icon_size) / 10.0) * 10.0 + scoreboard_width
+        foody = round(random.randrange(0, gamedis_height - snake_icon_size) / 10.0) * 10.0
+        game_score+=1
+        update_score(game_score)
+        print("YEAHHHH FOOOB")
+    
     clock.tick(snake_speed)
 
 
