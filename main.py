@@ -121,7 +121,7 @@ def make_lose_screen():
     global game_over
     global window_over
     pygame.draw.rect(gamedis, black, game_area)
-    lose_text = score_font_type.render("RIP BOZO YOU LOSE", True, white)
+    lose_text = score_font_type.render("YOU LOSE", True, white)
     lose_pos_x = gamedis_width / 2 + scoreboard_width / 2
     lose_pos_y = gamedis_height / 4
     gamedis.blit(lose_text, (lose_pos_x, lose_pos_y))
@@ -217,6 +217,14 @@ def update_shop():
     rock2_icon = pygame.image.load(rock2_icon_link)
     rock2_icon = pygame.transform.scale(rock2_icon, (80, 80))
     gamedis.blit(rock2_icon, ((10 + 80 + 15), scoreboard_height + 50 + 80 + 20))
+
+
+    #Select Button
+    select_button = score_font_type.render("Select", True, black)
+    pygame.draw.rect(gamedis, purple, (10 + 20, scoreboard_height + 50 + 160 + 40, 140, 50))
+    gamedis.blit(select_button, (10 + 20 + 10, scoreboard_height + 50 + 160 + 20 + 40))
+    pygame.display.update()
+
 
     pygame.display.flip()
 
