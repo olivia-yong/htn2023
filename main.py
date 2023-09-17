@@ -1,6 +1,9 @@
+import time
 import pygame
 import random
+import requests as req
 from threading import Thread
+
 
 from hand_landmarker import run, HAND_EVENT
 
@@ -8,6 +11,9 @@ pygame.init()
 pygame.font.init()
 
 #########################################################
+# CONSTANTS
+BASE_URL = 'https://htn-2023-backend.vercel.app'
+
 # VARIABLES
 
 # colors
@@ -24,6 +30,8 @@ logo = pygame.image.load("./ASSETS/logo.png")
 pygame.display.set_icon(logo)
 
 # game screen
+screen_width = 800
+screen_height = 600
 gamedis_width = 600
 gamedis_height = 600
 size = [gamedis_width, gamedis_height]
@@ -122,18 +130,39 @@ def make_lose_screen():
     global window_over
     pygame.draw.rect(gamedis, black, game_area)
     lose_text = score_font_type.render("YOU LOSE", True, white)
-    lose_pos_x = gamedis_width / 2 + scoreboard_width / 2
-    lose_pos_y = gamedis_height / 4
-    gamedis.blit(lose_text, (lose_pos_x, lose_pos_y))
+    text_rect = lose_text.get_rect(center=(gamedis_width / 2 + scoreboard_width, gamedis_height / 8))
+    gamedis.blit(lose_text, text_rect)
+
+    # Making Leaderboard
+    res = req.get(BASE_URL + '/leaderboard').json()
+    leaderboard = res['data']
+    board_w = 400
+    board_h = 500
+    board_pos_x = gamedis_width / 2 + scoreboard_width - board_w / 2
+    board_pos_y = gamedis_height / 8 + 100
+    pygame.draw.rect(gamedis, orange, (board_pos_x, board_pos_y, board_w, board_h))
+    board_text =  pygame.font.SysFont(None, 30).render("Leaderboard", True, white)
+    text_y = board_pos_y + 30       
+    text_rect = board_text.get_rect(center=(gamedis_width/2 + scoreboard_width, text_y))
+   
+    gamedis.blit(board_text, text_rect)
+
+    for score in leaderboard:
+        text_y += 30
+        score_text = pygame.font.SysFont(None, 27).render(f"{score[0]} - {score[1]}    {score[2][5:16]}", True, white)
+        text_rect = score_text.get_rect(center=(board_pos_x + board_w/2, text_y))
+        gamedis.blit(score_text, text_rect)
+        
 
     # Making Play Again Button
-    button_w = 200
-    button_h = 100
-    button_pos_x = gamedis_width / 2 + scoreboard_width / 2
-    button_pos_y = 400
-    play_again_button = score_font_type.render("Play Again ?", True, black)
+    button_w = 170
+    button_h = 55
+    button_pos_x = gamedis_width / 2 + scoreboard_width - button_w / 2
+    button_pos_y = gamedis_height * 8 / 10
+    play_again_button = score_font_type.render("Play Again?", True, black)
     pygame.draw.rect(gamedis, purple, (button_pos_x, button_pos_y, button_w, button_h))
-    gamedis.blit(play_again_button, (button_pos_x + 10, button_pos_y + 40))
+    text_rect = play_again_button.get_rect(center=(button_pos_x + button_w / 2, button_pos_y + button_h / 2))
+    gamedis.blit(play_again_button, text_rect)
     pygame.display.update()
 
     while window_over == False:
@@ -147,7 +176,7 @@ def make_lose_screen():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if (
                     button_pos_x <= mouse[0] <= button_w + button_pos_x
-                    and 400 <= mouse[1] <= 400 + button_h
+                    and button_pos_y <= mouse[1] <= button_h + button_pos_y 
                 ):
                     print("BUTTON PRESSED HOORAY")
                     game_over = False
@@ -156,11 +185,147 @@ def make_lose_screen():
                     break
 
 
-def make_intro_screen():
+def make_intro_screen():    
     global game_on
     gamedis.fill(green)
+    intro_text = score_font_type.render("Welcome to Snake Wave", True, black)
+    text_rect = intro_text.get_rect(center=(screen_width / 2, 100))
+    gamedis.blit(intro_text, text_rect)
+
+    # username and password input
+    username_text = score_font_type.render("Username: ", True, black)
+    password_text = score_font_type.render("Password: ", True, black)
+    text_rect = username_text.get_rect(center=(screen_width / 2 - 150, 200))
+    username_input_x = screen_width / 2 - 75
+    username_input_y = text_rect[1]
+    pygame.draw.rect(gamedis, white, (username_input_x, username_input_y, 270, 30))
+    gamedis.blit(username_text, text_rect)
+    text_rect = password_text.get_rect(center=(screen_width / 2 - 150, 300))
+    password_input_x = username_input_x
+    password_input_y = text_rect[1]
+    pygame.draw.rect(gamedis, white, (password_input_x, password_input_y, 270, 30))
+
+    gamedis.blit(password_text, text_rect)
+    
+    # login button
+    login_button = score_font_type.render("Login", True, black)
+    text_rect = login_button.get_rect(center=(screen_width / 2, screen_height / 2 + 60))
+    login_x = text_rect[0]
+    login_y = text_rect[1]
+    pygame.draw.rect(gamedis, purple, (screen_width / 2 - 50, screen_height / 2 + 40, 100, 40))
+    gamedis.blit(login_button, text_rect)
+
+    # register button
+    register_button = score_font_type.render("Register", True, black)
+    text_rect = register_button.get_rect(center=(screen_width / 2, screen_height / 2 + 180))
+    register_x = text_rect[0]
+    register_y = text_rect[1]
+    pygame.draw.rect(gamedis, purple, (screen_width / 2 - 50, screen_height / 2 + 160, 125, 40))
+    gamedis.blit(register_button, text_rect)
+
     pygame.display.update()
-    game_on = True
+
+    username = ''
+    password = ''
+    password_dis = ''
+    username_input_active = False
+    password_input_active = False
+    while game_on == False:
+        # check for events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_on = True
+                window_over = True
+                break
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse = pygame.mouse.get_pos()
+                
+                # Check if mouse is in input boxes
+                if (mouse[0] <= username_input_x + 270 and mouse[0] >= username_input_x) and (mouse[1] <= username_input_y + 30 and mouse[1] >= username_input_y):
+                    username_input_active = True
+                    password_input_active = False
+                    print("username input active")
+                    continue
+                    
+                if (mouse[0] <= password_input_x + 270 and mouse[0] >= password_input_x) and (mouse[1] <= password_input_y + 30 and mouse[1] >= password_input_y):
+                    password_input_active = True
+                    username_input_active = False
+                    print("password input active")
+                    continue
+
+                if ((login_x <= mouse[0] <= login_x + 100) and 
+                    (login_y <= mouse[1] <= login_y + 40) and 
+                    (username_input_active or password_input_active)
+                    ):
+                    print("login button pressed")
+                    username_input_active = False
+                    password_input_active = False
+
+                    res = req.post(BASE_URL + '/login', {'username': username, 'password': password}).json()
+                    user_info = res['data']
+
+                    if res['status'] == 1:
+                        if (res['message'] == 'Incorrect password'):
+                            wrong_pass = score_font_type.render(res['message'], True, purple)
+                            text_rect = wrong_pass.get_rect(center=(screen_width / 2, screen_height / 2 + 60))
+                            gamedis.blit(wrong_pass, text_rect)
+
+
+                if ((register_x <= mouse[0] <= register_x + 125) and 
+                    (register_y <= mouse[1] <= register_y + 40) and 
+                    (username_input_active or password_input_active)
+                    ):
+                    print("register button pressed")
+                    username_input_active = False
+                    password_input_active = False
+            
+            if event.type == pygame.KEYDOWN:
+                if username_input_active:
+                    if event.key == pygame.K_BACKSPACE:
+                        username = username[:-1]
+                    else:
+                        username += event.unicode
+                
+                if password_input_active:
+                    if event.key == pygame.K_BACKSPACE:
+                        password = password[:-1]
+                        password_dis = password_dis[:-1]
+                    else:
+                        password += event.unicode
+                        password_dis += '*'
+
+        if username_input_active:
+            user_color = pink
+            pass_color = white
+        elif password_input_active:
+            user_color = white
+            pass_color = pink
+        else: 
+            user_color = white
+            pass_color = white
+
+        pygame.draw.rect(gamedis, user_color, (username_input_x, username_input_y, 270, 30))
+        pygame.draw.rect(gamedis, pass_color, (password_input_x, password_input_y, 270, 30))
+
+        # Set username and password length limit
+        if len(username) > 26:
+            username = username[:26]
+        if len(password) > 26:
+            password = password[:26]
+        if len(password_dis) > 26:
+            password_dis = password_dis[:26]
+
+        # render inputted text
+        username_input = pygame.font.SysFont(None, 25).render(username, True, black)
+        password_input = pygame.font.SysFont(None, 25).render(password_dis, True, black)
+        gamedis.blit(username_input, (username_input_x + 5 , username_input_y + 5))
+        gamedis.blit(password_input, (password_input_x + 5 , password_input_y + 5))
+        pygame.display.update()
+        
+        
+    #game_on = True
+    return False
 
 
 def make_game_screen():
@@ -344,12 +509,13 @@ def game_loop(game_over):
         pygame.display.flip()
         clock.tick(snake_speed)
 
-
+logged_in = False
 while game_on == False:
-    make_intro_screen()
+    logged_in = make_intro_screen()
 
-make_game_screen()
-game_loop(game_over)
+if (game_on and logged_in):
+    make_game_screen()
+    game_loop(game_over)
 
 
 # Exiting the Game
