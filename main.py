@@ -77,7 +77,7 @@ game_area = pygame.Rect(200, 0, gamedis_width, gamedis_height)
 scoreboard = pygame.Rect(0, 0, scoreboard_width, scoreboard_height)
 shop = pygame.Rect(0, scoreboard_height, shop_width, shop_height)
 
-pygame.display.set_caption("Snake wave")
+pygame.display.set_caption("Snake Wave")
 
 background_process = Thread(target=run)
 background_process.start()
@@ -131,7 +131,7 @@ def make_lose_screen():
     button_h = 100
     button_pos_x = gamedis_width / 2 + scoreboard_width / 2
     button_pos_y = 400
-    play_again_button = score_font_type.render("Play Again >:(", True, black)
+    play_again_button = score_font_type.render("Play Again ?", True, black)
     pygame.draw.rect(gamedis, purple, (button_pos_x, button_pos_y, button_w, button_h))
     gamedis.blit(play_again_button, (button_pos_x + 10, button_pos_y + 40))
     pygame.display.update()
@@ -179,8 +179,7 @@ def make_game_screen():
     score_display = score_font_type.render(f"Score: {game_score}", True, black)
     gamedis.blit(score_display, (20, 50))
 
-
-    #make shop
+    # make shop
     update_shop()
 
     # make initial snake
@@ -193,38 +192,39 @@ def make_game_screen():
     gamedis.blit(snake_head, (pos_x, pos_y))
     pygame.display.flip()
 
+
 def update_shop():
     pygame.draw.rect(gamedis, pale_green, shop)
 
-    #skin 1
+    # skin 1
     skin1_icon = pygame.image.load("./ASSETS/skin1_head.png").convert()
     skin1_icon = pygame.transform.scale(skin1_icon, (80, 80))
     gamedis.blit(skin1_icon, (10, scoreboard_height + 50))
 
-    #rock 1
+    # rock 1
     rock1_icon = pygame.image.load("./ASSETS/rock1.png").convert()
     rock1_icon = pygame.transform.scale(rock1_icon, (80, 80))
     gamedis.blit(rock1_icon, ((10 + 80 + 15), scoreboard_height + 50))
 
-    #skin 2
+    # skin 2
     skin2_icon_link = "./ASSETS/skin2_head_locked.jpg"
     skin2_icon = pygame.image.load(skin2_icon_link)
     skin2_icon = pygame.transform.scale(skin2_icon, (80, 80))
     gamedis.blit(skin2_icon, (10, scoreboard_height + 50 + 80 + 20))
 
-    #rock 2
+    # rock 2
     rock2_icon_link = "./ASSETS/rock2_locked.jpg"
     rock2_icon = pygame.image.load(rock2_icon_link)
     rock2_icon = pygame.transform.scale(rock2_icon, (80, 80))
     gamedis.blit(rock2_icon, ((10 + 80 + 15), scoreboard_height + 50 + 80 + 20))
 
-
-    #Select Button
+    # Select Button
     select_button = score_font_type.render("Select", True, black)
-    pygame.draw.rect(gamedis, purple, (10 + 20, scoreboard_height + 50 + 160 + 40, 140, 50))
+    pygame.draw.rect(
+        gamedis, purple, (10 + 20, scoreboard_height + 50 + 160 + 40, 140, 50)
+    )
     gamedis.blit(select_button, (10 + 20 + 10, scoreboard_height + 50 + 160 + 20 + 40))
     pygame.display.update()
-
 
     pygame.display.flip()
 
@@ -297,7 +297,7 @@ def game_loop(game_over):
             or pos_y < 0
         ):
             game_over = True
-            print("Game is Over you hit wall")
+            print("Game is over! You hit a wall!")
             snake_List.clear()
             make_lose_screen()
             return
@@ -332,7 +332,7 @@ def game_loop(game_over):
             )
             game_score += 1
             update_score(game_score)
-            print("YEAHHHH FOOOB")
+            print("YEAH FOOD")
 
         # Check if snake hit itself
         for x in snake_List[:-1]:
@@ -346,11 +346,12 @@ def game_loop(game_over):
         pygame.display.flip()
         clock.tick(snake_speed)
 
+
 while game_on == False:
-        make_intro_screen()
+    make_intro_screen()
 
 make_game_screen()
-game_loop(game_over)    
+game_loop(game_over)
 
 
 # Exiting the Game
