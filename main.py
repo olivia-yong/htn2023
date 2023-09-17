@@ -14,6 +14,7 @@ pygame.font.init()
 orange = (227, 174, 59)
 black = (0, 0, 0)
 white = (255, 255, 255)
+pink = (255, 184, 230)
 
 # game screen
 gamedis_width = 600
@@ -39,10 +40,10 @@ snake_tail_img = "./ASSETS/skin1_tail.png"
 # apples
 game_score = 0
 foodx = (
-    round(random.randrange(0, gamedis_width - snake_icon_size) / 10.0) * 10.0
-    + scoreboard_width
+    round(random.randrange(0, gamedis_width - 200 - snake_icon_size) / 10.0) * 10.0
+    + scoreboard_width + 100
 )
-foody = round(random.randrange(0, gamedis_height - snake_icon_size) / 10.0) * 10.0
+foody = round(random.randrange(0, gamedis_height - 200 - snake_icon_size) / 10.0) * 10.0 + 100
 food_img = "./ASSETS/rock1.png"
 
 # speed
@@ -50,6 +51,9 @@ clock = pygame.time.Clock()
 snake_speed = 10
 
 game_over = False
+window_over = False
+game_on = True
+
 ######################################################
 # MAKE GAME SCREEN
 gamedis = pygame.display.set_mode((800, 600))
@@ -60,7 +64,7 @@ pygame.draw.rect(gamedis, black, game_area)
 
 # make scoreboard
 scoreboard = pygame.Rect(0, 0, scoreboard_width, scoreboard_height)
-pygame.draw.rect(gamedis, orange, scoreboard)
+pygame.draw.rect(gamedis, pink, scoreboard)
 score_display = score_font_type.render(f"Score: {game_score}", True, black)
 gamedis.blit(score_display, (30, 100))
 
@@ -70,7 +74,7 @@ snake_head = pygame.transform.scale(snake_head, (snake_icon_size, snake_icon_siz
 gamedis.blit(snake_head, (pos_x, pos_y))
 
 pygame.display.flip()
-pygame.display.set_caption("Snakewave")
+pygame.display.set_caption("Snake wave")
 
 background_process = Thread(target=run)
 background_process.start()
@@ -81,7 +85,7 @@ background_process.start()
 
 # update score
 def update_score(game_score):
-    pygame.draw.rect(gamedis, orange, scoreboard)
+    pygame.draw.rect(gamedis, pink, scoreboard)
     score_display = score_font_type.render(f"Score: {game_score}", True, black)
     gamedis.blit(score_display, (30, 100))
     pygame.display.update()
@@ -101,7 +105,7 @@ def update_snake(snake_List, pos_x, pos_y):
 
     pygame.display.update()
 
-def  make_food(foodx, foody):
+def make_food(foodx, foody):
     food = pygame.image.load(food_img).convert()
     food = pygame.transform.scale(food, (snake_icon_size, snake_icon_size))
     gamedis.blit(food, (foodx, foody))
@@ -109,7 +113,7 @@ def  make_food(foodx, foody):
 
 
 # continuously run game until game_over = true (when game ends)
-while not game_over:
+while not window_over:
     # Get all event
     score_change = False
     for event in pygame.event.get():
@@ -123,7 +127,8 @@ while not game_over:
         """
         # X BUTTON
         if event.type == pygame.QUIT:
-            game_over = True
+            window_over = True
+            exit
 
         # Movement
         if event.type == pygame.KEYDOWN:
@@ -144,21 +149,22 @@ while not game_over:
                 game_score += 1
                 update_score(game_score)
 
+        '''
         if event.type == HAND_EVENT:
             result = event.dict.get("result")
-            if result == "L":
+            if result == "L" and pos_x_change == 0:
                 pos_x_change = -snake_icon_size
                 pos_y_change = 0
-            elif result == "R":
+            elif result == "R" and pos_x_change == 0:
                 pos_x_change = snake_icon_size
                 pos_y_change = 0
-            elif result == "U":
+            elif result == "U" and pos_y_change == 0:
                 pos_x_change = 0
                 pos_y_change = -snake_icon_size
-            elif result == "D":
+            elif result == "D" and pos_y_change == 0:
                 pos_x_change = 0
                 pos_y_change = snake_icon_size
-
+        '''
     # Did snake hit wall?
     pos_x += pos_x_change
     pos_y += pos_y_change
@@ -170,7 +176,7 @@ while not game_over:
         or pos_y < 0
     ):
         game_over = True
-        break
+        
 
     # Updating Snake Head
     pygame.draw.rect(gamedis, black, game_area)
@@ -193,12 +199,10 @@ while not game_over:
     # Did snake hit food?
     if pos_x == foodx and pos_y == foody:
         foodx = (
-            round(random.randrange(0, gamedis_width - snake_icon_size) / 10.0) * 10.0
-            + scoreboard_width
+            round(random.randrange(0, gamedis_width - 200 - snake_icon_size) / 10.0) * 10.0
+            + scoreboard_width + 100
         )
-        foody = (
-            round(random.randrange(0, gamedis_height - snake_icon_size) / 10.0) * 10.0
-        )
+        foody = round(random.randrange(0, gamedis_height - 200 - snake_icon_size) / 10.0) * 10.0 + 100
         game_score += 1
         update_score(game_score)
         print("YEAHHHH FOOOB")
