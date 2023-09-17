@@ -14,6 +14,7 @@ VisionRunningMode = mp.tasks.vision.RunningMode
 
 HAND_EVENT = pygame.USEREVENT + 1
 
+
 def get_index_landmark(result):
     if result.hand_landmarks:
         hand_landmarks_hands = result.hand_landmarks
@@ -63,7 +64,10 @@ def run():
             height, width, _ = frame.shape
             cv2.line(frame, (0, 0), (width, height), (0, 255, 0), 1)
             cv2.line(frame, (0, height), (width, 0), (0, 255, 0), 1)
+            frame = cv2.resize(frame, None, fx=0.8, fy=0.8)
             cv2.imshow("frame", frame)
+
+            cv2.moveWindow("frame", 0, 0)
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
