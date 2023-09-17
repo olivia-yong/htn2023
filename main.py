@@ -30,7 +30,11 @@ size = [gamedis_width, gamedis_height]
 
 # scoreboard
 scoreboard_width = 200
-scoreboard_height = 600
+scoreboard_height = 200
+
+# shop
+shop_width = 200
+shop_height = 600
 
 score_font_type = pygame.font.SysFont(None, 36)
 
@@ -71,6 +75,7 @@ gamedis = pygame.display.set_mode((800, 600))
 
 game_area = pygame.Rect(200, 0, gamedis_width, gamedis_height)
 scoreboard = pygame.Rect(0, 0, scoreboard_width, scoreboard_height)
+shop = pygame.Rect(0, scoreboard_height, shop_width, shop_height)
 
 pygame.display.set_caption("Snake wave")
 
@@ -85,7 +90,7 @@ background_process.start()
 def update_score(game_score):
     pygame.draw.rect(gamedis, pink, scoreboard)
     score_display = score_font_type.render(f"Score: {game_score}", True, black)
-    gamedis.blit(score_display, (30, 100))
+    gamedis.blit(score_display, (20, 50))
     pygame.display.update()
 
 
@@ -145,8 +150,9 @@ def make_lose_screen():
                     and 400 <= mouse[1] <= 400 + button_h
                 ):
                     print("BUTTON PRESSED HOORAY")
-                    make_game_screen()
                     game_over = False
+                    make_game_screen()
+                    game_loop(game_over)
                     break
 
 
@@ -171,7 +177,11 @@ def make_game_screen():
     game_score = 0
     pygame.draw.rect(gamedis, pink, scoreboard)
     score_display = score_font_type.render(f"Score: {game_score}", True, black)
-    gamedis.blit(score_display, (30, 100))
+    gamedis.blit(score_display, (20, 50))
+
+
+    #make shop
+    update_shop()
 
     # make initial snake
     pos_x = gamedis_width / 2 + scoreboard_width
@@ -183,14 +193,42 @@ def make_game_screen():
     gamedis.blit(snake_head, (pos_x, pos_y))
     pygame.display.flip()
 
+def update_shop():
+    pygame.draw.rect(gamedis, pale_green, shop)
 
-while not window_over:
-    while game_on == False:
-        make_intro_screen()
-    if game_over == True:
-        break
-    # Get all event
-    make_game_screen()
+    #skin 1
+    skin1_icon = pygame.image.load("./ASSETS/skin1_head.png").convert()
+    skin1_icon = pygame.transform.scale(skin1_icon, (80, 80))
+    gamedis.blit(skin1_icon, (10, scoreboard_height + 50))
+
+    #rock 1
+    rock1_icon = pygame.image.load("./ASSETS/rock1.png").convert()
+    rock1_icon = pygame.transform.scale(rock1_icon, (80, 80))
+    gamedis.blit(rock1_icon, ((10 + 80 + 15), scoreboard_height + 50))
+
+    #skin 2
+    skin2_icon_link = "./ASSETS/skin2_head_locked.jpg"
+    skin2_icon = pygame.image.load(skin2_icon_link)
+    skin2_icon = pygame.transform.scale(skin2_icon, (80, 80))
+    gamedis.blit(skin2_icon, (10, scoreboard_height + 50 + 80 + 20))
+
+    #rock 2
+    rock2_icon_link = "./ASSETS/rock2_locked.jpg"
+    rock2_icon = pygame.image.load(rock2_icon_link)
+    rock2_icon = pygame.transform.scale(rock2_icon, (80, 80))
+    gamedis.blit(rock2_icon, ((10 + 80 + 15), scoreboard_height + 50 + 80 + 20))
+
+    pygame.display.flip()
+
+
+def game_loop(game_over):
+    global pos_x
+    global pos_y
+    global pos_x_change
+    global pos_y_change
+    global foodx
+    global foody
+    global game_score
     while game_over == False:
         for event in pygame.event.get():
             """
@@ -203,9 +241,8 @@ while not window_over:
             """
             # X BUTTON
             if event.type == pygame.QUIT:
-                window_over = True
                 game_over = True
-                exit
+                return
 
             # Movement
             if event.type == pygame.KEYDOWN:
@@ -255,7 +292,7 @@ while not window_over:
             print("Game is Over you hit wall")
             snake_List.clear()
             make_lose_screen()
-            break
+            return
 
         # Updating Snake Head
         pygame.draw.rect(gamedis, black, game_area)
@@ -296,9 +333,16 @@ while not window_over:
                 print("We hit uh ourselves")
                 snake_List.clear()
                 make_lose_screen()
+                return
 
         pygame.display.flip()
         clock.tick(snake_speed)
+
+while game_on == False:
+        make_intro_screen()
+
+make_game_screen()
+game_loop(game_over)    
 
 
 # Exiting the Game
