@@ -102,6 +102,7 @@ def make_food(foodx, foody):
 
 def make_lose_screen():
     global game_over
+    global window_over
     pygame.draw.rect(gamedis, black, game_area)
     lose_text = score_font_type.render("RIP BOZO YOU LOSE", True, white)
     lose_pos_x = gamedis_width / 2 + scoreboard_width / 2
@@ -118,9 +119,14 @@ def make_lose_screen():
     gamedis.blit(play_again_button, (button_pos_x + 10, button_pos_y + 40))
     pygame.display.update()
 
-    while game_over == True:
+    while window_over == False:
         for event in pygame.event.get():
             mouse = pygame.mouse.get_pos()
+            if event.type == pygame.QUIT:
+                window_over = True
+                game_over = True
+                break
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if (button_pos_x <= mouse[0] <= button_w + button_pos_x and
                     400 <= mouse[1] <= 400 + button_h):
