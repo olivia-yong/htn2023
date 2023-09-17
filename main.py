@@ -270,7 +270,6 @@ def game_loop(game_over):
                     game_score += 1
                     update_score(game_score)
 
-            """           
             if event.type == HAND_EVENT:
                 result = event.dict.get("result")
                 if result == "L" and pos_x_change == 0:
@@ -285,7 +284,6 @@ def game_loop(game_over):
                 elif result == "D" and pos_y_change == 0:
                     pos_x_change = 0
                     pos_y_change = snake_icon_size
-            """
 
         pos_x += pos_x_change
         pos_y += pos_y_change

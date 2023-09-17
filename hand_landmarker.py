@@ -62,7 +62,7 @@ def run():
             landmarker.detect_async(mp_image, int(vid.get(cv2.CAP_PROP_POS_MSEC)))
 
             height, width, _ = frame.shape
-    '''      
+
             cv2.line(frame, (0, 0), (width, height), (0, 255, 0), 2)
             cv2.line(frame, (0, height), (width, 0), (0, 255, 0), 2)
             frame = cv2.resize(frame, None, fx=0.8, fy=0.8)
@@ -72,6 +72,5 @@ def run():
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
-        #vid.release()
-        #cv2.destroyAllWindows()
-'''
+        vid.release()
+        cv2.destroyAllWindows()
