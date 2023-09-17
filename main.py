@@ -104,19 +104,23 @@ def make_lose_screen():
     global game_over
     pygame.draw.rect(gamedis, black, game_area)
     lose_text = score_font_type.render("RIP BOZO YOU LOSE", True, white)
-    gamedis.blit(lose_text, (gamedis_width / 2, gamedis_height / 2))
+    lose_pos_x = gamedis_width / 2 + scoreboard_width / 2
+    lose_pos_y = gamedis_height / 4
+    gamedis.blit(lose_text, (lose_pos_x, lose_pos_y))
 
     #Making Play Again Button
     button_w = 200
     button_h = 100
-    button_pos_x = gamedis_width / 2
+    button_pos_x = gamedis_width / 2 + scoreboard_width / 2
+    button_pos_y = 400
     play_again_button = score_font_type.render("Play Again >:(", True, black)
-    pygame.draw.rect(gamedis, purple, (button_pos_x, 400, button_w, button_h))
-   ## gamedis.blit(play_again_button())
+    pygame.draw.rect(gamedis, purple, (button_pos_x, button_pos_y, button_w, button_h))
+    gamedis.blit(play_again_button, (button_pos_x + 10, button_pos_y + 40))
     pygame.display.update()
 
     while game_over == True:
         for event in pygame.event.get():
+            mouse = pygame.mouse.get_pos()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if (button_pos_x <= mouse[0] <= button_w + button_pos_x and
                     400 <= mouse[1] <= 400 + button_h):
@@ -125,7 +129,6 @@ def make_lose_screen():
                     game_over = False
                     break
 
-            mouse = pygame.mouse.get_pos()
 
 def make_intro_screen():
     global game_on
@@ -134,19 +137,31 @@ def make_intro_screen():
     game_on = True
 
 def make_game_screen():
+    global pos_x
+    global pos_y
+    global pos_x_change
+    global pos_y_change
+    global game_score
+
     # make main playing area
     pygame.draw.rect(gamedis, black, game_area)
-
+    
     # make scoreboard
+    game_score = 0
     pygame.draw.rect(gamedis, pink, scoreboard)
     score_display = score_font_type.render(f"Score: {game_score}", True, black)
     gamedis.blit(score_display, (30, 100))
 
     #make initial snake
+    pos_x = gamedis_width / 2 + scoreboard_width
+    pos_y = gamedis_height / 2
+    pos_x_change = 0
+    pos_y_change = 0
     snake_head = pygame.image.load(snake_body_img).convert()
     snake_head = pygame.transform.scale(snake_head, (snake_icon_size, snake_icon_size))
     gamedis.blit(snake_head, (pos_x, pos_y))
     pygame.display.flip()    
+
 
 while not window_over:
     while game_on == False:
@@ -156,8 +171,6 @@ while not window_over:
     # Get all event
     make_game_screen()
     while game_over == False:
-        print(game_over)
-
         for event in pygame.event.get():
             """
             #RESIZE WINDOW BUTTONs
@@ -191,7 +204,7 @@ while not window_over:
                     game_score += 1
                     update_score(game_score)
 
-            '''
+            '''           
             if event.type == HAND_EVENT:
                 result = event.dict.get("result")
                 if result == "L" and pos_x_change == 0:
@@ -200,13 +213,13 @@ while not window_over:
                 elif result == "R" and pos_x_change == 0:
                     pos_x_change = snake_icon_size
                     pos_y_change = 0
-             elif result == "U" and pos_y_change == 0:
+                elif result == "U" and pos_y_change == 0:
                     pos_x_change = 0
                     pos_y_change = -snake_icon_size
                 elif result == "D" and pos_y_change == 0:
                     pos_x_change = 0
                     pos_y_change = snake_icon_size
-            '''
+            '''           
             
         pos_x += pos_x_change
         pos_y += pos_y_change
@@ -220,10 +233,9 @@ while not window_over:
         ):
             game_over = True
             print("Game is Over you hit wall")
-            break
-            
-            #make_lose_screen()
-        
+            snake_List.clear()
+            make_lose_screen()
+            break        
             
 
         # Updating Snake Head
@@ -252,20 +264,18 @@ while not window_over:
             print("YEAHHHH FOOOB")
 
 
-        '''
+        
         # Check if snake hit itself
         for x in snake_List[:-1]:
-            print(x[0] + " " + x[1])
-
             if x == snake_Head:
                 game_over = True
                 print("We hit uh ourselves")
-                break
-                ##make_lose_screen()
-        '''
+                snake_List.clear()
+                make_lose_screen()
+            
+        
         pygame.display.flip()
         clock.tick(snake_speed)
-
 
     
 # Exiting the Game
