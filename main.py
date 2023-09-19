@@ -262,15 +262,23 @@ def make_intro_screen():
                     username_input_active = False
                     password_input_active = False
 
-                    res = req.post(BASE_URL + '/login', {'username': username, 'password': password}).json()
-                    user_info = res['data']
-
+                    res = req.post(BASE_URL + '/login', json={'username': username, 'password': password}, headers={'Content-Type': 'application/json'}).json()
+                    
                     if res['status'] == 1:
                         if (res['message'] == 'Incorrect password'):
-                            wrong_pass = score_font_type.render(res['message'], True, purple)
-                            text_rect = wrong_pass.get_rect(center=(screen_width / 2, screen_height / 2 + 60))
+                            wrong_pass = pygame.font.SysFont(None, 25).render(res['message'], True, purple)
+                            text_rect = wrong_pass.get_rect(center=(screen_width / 2, username_input_y - 20))
                             gamedis.blit(wrong_pass, text_rect)
 
+                        elif (res['message'] == 'User does not exist'):
+                            no_user = pygame.font.SysFont(None, 25).render(res['message'], True, purple)
+                            text_rect = no_user.get_rect(center=(screen_width / 2, password_input_y - 20))
+                            gamedis.blit(no_user, text_rect)
+
+                    if res['status'] == 0:
+                        print(res['data'])
+                        game_on = True
+                        return True
 
                 if ((register_x <= mouse[0] <= register_x + 125) and 
                     (register_y <= mouse[1] <= register_y + 40) and 
