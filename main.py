@@ -133,6 +133,16 @@ def make_lose_screen():
     text_rect = lose_text.get_rect(center=(gamedis_width / 2 + scoreboard_width, gamedis_height / 8))
     gamedis.blit(lose_text, text_rect)
 
+    # Saving latest score
+    res = req.post(BASE_URL + '/post_score', json={'username': username, 'score': game_score}, headers={'Content-Type': 'application/json'}).json()
+
+    # Get personal highscore
+    res = req.get(BASE_URL + '/personal_highscore', json={'username': username}, headers={'Content-Type': 'application/json'}).json()
+    highscore = res['data']
+    highscore_text = score_font_type.render(f"Personal Highscore: {highscore}", True, white)
+    text_rect = highscore_text.get_rect(center=(gamedis_width / 2 + scoreboard_width, gamedis_height / 8 + 50))
+    gamedis.blit(highscore_text, text_rect)
+
     # Making Leaderboard
     res = req.get(BASE_URL + '/leaderboard').json()
     leaderboard = res['data']
@@ -141,7 +151,7 @@ def make_lose_screen():
     board_pos_x = gamedis_width / 2 + scoreboard_width - board_w / 2
     board_pos_y = gamedis_height / 8 + 100
     pygame.draw.rect(gamedis, orange, (board_pos_x, board_pos_y, board_w, board_h))
-    board_text =  pygame.font.SysFont(None, 30).render("Leaderboard", True, white)
+    board_text =  pygame.font.SysFont(None, 33).render("Leaderboard", True, white)
     text_y = board_pos_y + 30       
     text_rect = board_text.get_rect(center=(gamedis_width/2 + scoreboard_width, text_y))
    
@@ -158,7 +168,7 @@ def make_lose_screen():
     button_w = 170
     button_h = 55
     button_pos_x = gamedis_width / 2 + scoreboard_width - button_w / 2
-    button_pos_y = gamedis_height * 8 / 10
+    button_pos_y = gamedis_height * 9 / 10
     play_again_button = score_font_type.render("Play Again?", True, black)
     pygame.draw.rect(gamedis, purple, (button_pos_x, button_pos_y, button_w, button_h))
     text_rect = play_again_button.get_rect(center=(button_pos_x + button_w / 2, button_pos_y + button_h / 2))
@@ -225,6 +235,7 @@ def make_intro_screen():
 
     pygame.display.update()
 
+    global username
     username = ''
     password = ''
     password_dis = ''
@@ -267,12 +278,12 @@ def make_intro_screen():
                     if res['status'] == 1:
                         if (res['message'] == 'Incorrect password'):
                             wrong_pass = pygame.font.SysFont(None, 25).render(res['message'], True, purple)
-                            text_rect = wrong_pass.get_rect(center=(screen_width / 2, username_input_y - 20))
+                            text_rect = wrong_pass.get_rect(center=(screen_width / 2, password_input_y - 20))
                             gamedis.blit(wrong_pass, text_rect)
 
                         elif (res['message'] == 'User does not exist'):
                             no_user = pygame.font.SysFont(None, 25).render(res['message'], True, purple)
-                            text_rect = no_user.get_rect(center=(screen_width / 2, password_input_y - 20))
+                            text_rect = no_user.get_rect(center=(screen_width / 2, username_input_y - 20))
                             gamedis.blit(no_user, text_rect)
 
                     if res['status'] == 0:
@@ -288,6 +299,19 @@ def make_intro_screen():
                     username_input_active = False
                     password_input_active = False
             
+                    res = req.post(BASE_URL + '/register', json={'username': username, 'password': password}, headers={'Content-Type': 'application/json'}).json()
+                    
+                    if res['status'] == 1:
+                        if (res['message'] == 'Username already exists'):
+                            user_exists = pygame.font.SysFont(None, 25).render(res['message'], True, purple)
+                            text_rect = user_exists.get_rect(center=(screen_width / 2, username_input_y - 20))
+                            gamedis.blit(user_exists, text_rect)
+
+                    if res['status'] == 0:
+                        print(res['data'])
+                        game_on = True
+                        return True
+
             if event.type == pygame.KEYDOWN:
                 if username_input_active:
                     if event.key == pygame.K_BACKSPACE:
@@ -301,7 +325,8 @@ def make_intro_screen():
                         password_dis = password_dis[:-1]
                     else:
                         password += event.unicode
-                        password_dis += '*'
+                        if event.unicode:
+                            password_dis += '*'
 
         if username_input_active:
             user_color = pink
