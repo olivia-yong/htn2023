@@ -1,4 +1,3 @@
-import time
 import pygame
 import random
 import requests as req
@@ -16,37 +15,37 @@ BASE_URL = 'https://htn-2023-backend.vercel.app'
 
 # VARIABLES
 
-# colors
-orange = (227, 174, 59)
-black = (0, 0, 0)
-white = (255, 255, 255)
-pink = (255, 184, 230)
-green = (0, 164, 0)
-pale_green = (219, 255, 132)
-purple = (130, 33, 139)
+# Colors
+ORANGE = (227, 174, 59)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+PINK = (255, 184, 230)
+GREEN = (0, 164, 0)
+PALE_GREEN = (219, 255, 132)
+PURPLE = (130, 33, 139)
 
-# logo
-logo = pygame.image.load("./ASSETS/logo.png")
-pygame.display.set_icon(logo)
+# Logo
+LOGO = pygame.image.load("./ASSETS/logo.png")
+pygame.display.set_icon(LOGO)
 
-# game screen
+# Game screen
 screen_width = 800
 screen_height = 600
 gamedis_width = 600
 gamedis_height = 600
 size = [gamedis_width, gamedis_height]
 
-# scoreboard
+# Scoreboard
 scoreboard_width = 200
 scoreboard_height = 200
 
-# shop
+# Shop
 shop_width = 200
 shop_height = 600
 
 score_font_type = pygame.font.SysFont(None, 36)
 
-# snake
+# Snake
 pos_x = gamedis_width / 2 + scoreboard_width
 pos_y = gamedis_height / 2
 pos_x_change = 0
@@ -56,7 +55,7 @@ snake_List = []
 snake_body_img = "./ASSETS/skin1_body.png"
 snake_tail_img = "./ASSETS/skin1_tail.png"
 
-# apples
+# Apples
 game_score = 0
 foodx = (
     round(random.randrange(0, gamedis_width - 200 - snake_icon_size) / 10.0) * 10.0
@@ -69,13 +68,14 @@ foody = (
 )
 food_img = "./ASSETS/rock1.png"
 
-# speed
+# Speed
 clock = pygame.time.Clock()
 snake_speed = 10
 
 game_over = False
 window_over = False
 game_on = False
+camera_on = False
 
 ######################################################
 # MAKE GAME SCREEN
@@ -87,23 +87,20 @@ shop = pygame.Rect(0, scoreboard_height, shop_width, shop_height)
 
 pygame.display.set_caption("Snake Wave")
 
-background_process = Thread(target=run)
-background_process.start()
-
 ##############################################################################################
 # FUNCTIONS
 
 
-# update score
+# Increment score
 def update_score(game_score):
-    pygame.draw.rect(gamedis, pink, scoreboard)
-    score_display = score_font_type.render(f"Score: {game_score}", True, black)
+    pygame.draw.rect(gamedis, PINK, scoreboard)
+    score_display = score_font_type.render(f"Score: {game_score}", True, BLACK)
     gamedis.blit(score_display, (20, 50))
     pygame.display.update()
 
-
+# Grow snake
 def update_snake(snake_List, pos_x, pos_y):
-    # Draw Snake
+    # Draw snake
     cnt = 0
     for x in snake_List:
         if cnt % 2 == 0:
@@ -118,6 +115,7 @@ def update_snake(snake_List, pos_x, pos_y):
     pygame.display.update()
 
 
+# Show food
 def make_food(foodx, foody):
     food = pygame.image.load(food_img).convert()
     food = pygame.transform.scale(food, (snake_icon_size, snake_icon_size))
@@ -128,8 +126,8 @@ def make_food(foodx, foody):
 def make_lose_screen():
     global game_over
     global window_over
-    pygame.draw.rect(gamedis, black, game_area)
-    lose_text = score_font_type.render("YOU LOSE", True, white)
+    pygame.draw.rect(gamedis, BLACK, game_area)
+    lose_text = score_font_type.render("YOU LOSE", True, WHITE)
     text_rect = lose_text.get_rect(center=(gamedis_width / 2 + scoreboard_width, gamedis_height / 8))
     gamedis.blit(lose_text, text_rect)
 
@@ -139,19 +137,19 @@ def make_lose_screen():
     # Get personal highscore
     res = req.get(BASE_URL + '/personal_highscore', json={'username': username}, headers={'Content-Type': 'application/json'}).json()
     highscore = res['data']
-    highscore_text = score_font_type.render(f"Personal Highscore: {highscore}", True, white)
+    highscore_text = score_font_type.render(f"Personal Highscore: {highscore}", True, WHITE)
     text_rect = highscore_text.get_rect(center=(gamedis_width / 2 + scoreboard_width, gamedis_height / 8 + 50))
     gamedis.blit(highscore_text, text_rect)
 
-    # Making Leaderboard
+    # Making leaderboard
     res = req.get(BASE_URL + '/leaderboard').json()
     leaderboard = res['data']
     board_w = 400
     board_h = 500
     board_pos_x = gamedis_width / 2 + scoreboard_width - board_w / 2
     board_pos_y = gamedis_height / 8 + 100
-    pygame.draw.rect(gamedis, orange, (board_pos_x, board_pos_y, board_w, board_h))
-    board_text =  pygame.font.SysFont(None, 33).render("Leaderboard", True, white)
+    pygame.draw.rect(gamedis, ORANGE, (board_pos_x, board_pos_y, board_w, board_h))
+    board_text =  pygame.font.SysFont(None, 33).render("Leaderboard", True, WHITE)
     text_y = board_pos_y + 30       
     text_rect = board_text.get_rect(center=(gamedis_width/2 + scoreboard_width, text_y))
    
@@ -159,18 +157,18 @@ def make_lose_screen():
 
     for score in leaderboard:
         text_y += 30
-        score_text = pygame.font.SysFont(None, 27).render(f"{score[0]} - {score[1]}    {score[2][5:16]}", True, white)
+        score_text = pygame.font.SysFont(None, 27).render(f"{score[0]} - {score[1]}    {score[2][5:16]}", True, WHITE)
         text_rect = score_text.get_rect(center=(board_pos_x + board_w/2, text_y))
         gamedis.blit(score_text, text_rect)
         
 
-    # Making Play Again Button
+    # Making play again button
     button_w = 170
     button_h = 55
     button_pos_x = gamedis_width / 2 + scoreboard_width - button_w / 2
     button_pos_y = gamedis_height * 9 / 10
-    play_again_button = score_font_type.render("Play Again?", True, black)
-    pygame.draw.rect(gamedis, purple, (button_pos_x, button_pos_y, button_w, button_h))
+    play_again_button = score_font_type.render("Play Again?", True, BLACK)
+    pygame.draw.rect(gamedis, PURPLE, (button_pos_x, button_pos_y, button_w, button_h))
     text_rect = play_again_button.get_rect(center=(button_pos_x + button_w / 2, button_pos_y + button_h / 2))
     gamedis.blit(play_again_button, text_rect)
     pygame.display.update()
@@ -197,40 +195,40 @@ def make_lose_screen():
 
 def make_intro_screen():    
     global game_on
-    gamedis.fill(green)
-    intro_text = score_font_type.render("Welcome to Snake Wave", True, black)
+    gamedis.fill(GREEN)
+    intro_text = score_font_type.render("Welcome to Snake Wave", True, BLACK)
     text_rect = intro_text.get_rect(center=(screen_width / 2, 100))
     gamedis.blit(intro_text, text_rect)
 
     # username and password input
-    username_text = score_font_type.render("Username: ", True, black)
-    password_text = score_font_type.render("Password: ", True, black)
+    username_text = score_font_type.render("Username: ", True, BLACK)
+    password_text = score_font_type.render("Password: ", True, BLACK)
     text_rect = username_text.get_rect(center=(screen_width / 2 - 150, 200))
     username_input_x = screen_width / 2 - 75
     username_input_y = text_rect[1]
-    pygame.draw.rect(gamedis, white, (username_input_x, username_input_y, 270, 30))
+    pygame.draw.rect(gamedis, WHITE, (username_input_x, username_input_y, 270, 30))
     gamedis.blit(username_text, text_rect)
     text_rect = password_text.get_rect(center=(screen_width / 2 - 150, 300))
     password_input_x = username_input_x
     password_input_y = text_rect[1]
-    pygame.draw.rect(gamedis, white, (password_input_x, password_input_y, 270, 30))
+    pygame.draw.rect(gamedis, WHITE, (password_input_x, password_input_y, 270, 30))
 
     gamedis.blit(password_text, text_rect)
     
     # login button
-    login_button = score_font_type.render("Login", True, black)
+    login_button = score_font_type.render("Login", True, BLACK)
     text_rect = login_button.get_rect(center=(screen_width / 2, screen_height / 2 + 60))
     login_x = text_rect[0]
     login_y = text_rect[1]
-    pygame.draw.rect(gamedis, purple, (screen_width / 2 - 50, screen_height / 2 + 40, 100, 40))
+    pygame.draw.rect(gamedis, PURPLE, (screen_width / 2 - 50, screen_height / 2 + 40, 100, 40))
     gamedis.blit(login_button, text_rect)
 
     # register button
-    register_button = score_font_type.render("Register", True, black)
+    register_button = score_font_type.render("Register", True, BLACK)
     text_rect = register_button.get_rect(center=(screen_width / 2, screen_height / 2 + 180))
     register_x = text_rect[0]
     register_y = text_rect[1]
-    pygame.draw.rect(gamedis, purple, (screen_width / 2 - 50, screen_height / 2 + 160, 125, 40))
+    pygame.draw.rect(gamedis, PURPLE, (screen_width / 2 - 50, screen_height / 2 + 160, 125, 40))
     gamedis.blit(register_button, text_rect)
 
     pygame.display.update()
@@ -277,12 +275,12 @@ def make_intro_screen():
                     
                     if res['status'] == 1:
                         if (res['message'] == 'Incorrect password'):
-                            wrong_pass = pygame.font.SysFont(None, 25).render(res['message'], True, purple)
+                            wrong_pass = pygame.font.SysFont(None, 25).render(res['message'], True, PURPLE)
                             text_rect = wrong_pass.get_rect(center=(screen_width / 2, password_input_y - 20))
                             gamedis.blit(wrong_pass, text_rect)
 
                         elif (res['message'] == 'User does not exist'):
-                            no_user = pygame.font.SysFont(None, 25).render(res['message'], True, purple)
+                            no_user = pygame.font.SysFont(None, 25).render(res['message'], True, PURPLE)
                             text_rect = no_user.get_rect(center=(screen_width / 2, username_input_y - 20))
                             gamedis.blit(no_user, text_rect)
 
@@ -303,7 +301,7 @@ def make_intro_screen():
                     
                     if res['status'] == 1:
                         if (res['message'] == 'Username already exists'):
-                            user_exists = pygame.font.SysFont(None, 25).render(res['message'], True, purple)
+                            user_exists = pygame.font.SysFont(None, 25).render(res['message'], True, PURPLE)
                             text_rect = user_exists.get_rect(center=(screen_width / 2, username_input_y - 20))
                             gamedis.blit(user_exists, text_rect)
 
@@ -329,14 +327,14 @@ def make_intro_screen():
                             password_dis += '*'
 
         if username_input_active:
-            user_color = pink
-            pass_color = white
+            user_color = PINK
+            pass_color = WHITE
         elif password_input_active:
-            user_color = white
-            pass_color = pink
+            user_color = WHITE
+            pass_color = PINK
         else: 
-            user_color = white
-            pass_color = white
+            user_color = WHITE
+            pass_color = WHITE
 
         pygame.draw.rect(gamedis, user_color, (username_input_x, username_input_y, 270, 30))
         pygame.draw.rect(gamedis, pass_color, (password_input_x, password_input_y, 270, 30))
@@ -349,15 +347,15 @@ def make_intro_screen():
         if len(password_dis) > 26:
             password_dis = password_dis[:26]
 
-        # render inputted text
-        username_input = pygame.font.SysFont(None, 25).render(username, True, black)
-        password_input = pygame.font.SysFont(None, 25).render(password_dis, True, black)
+        # Render inputted text
+        username_input = pygame.font.SysFont(None, 25).render(username, True, BLACK)
+        password_input = pygame.font.SysFont(None, 25).render(password_dis, True, BLACK)
         gamedis.blit(username_input, (username_input_x + 5 , username_input_y + 5))
         gamedis.blit(password_input, (password_input_x + 5 , password_input_y + 5))
         pygame.display.update()
         
         
-    #game_on = True
+    # game_on = True
     return False
 
 
@@ -367,20 +365,27 @@ def make_game_screen():
     global pos_x_change
     global pos_y_change
     global game_score
+    global camera_on
 
-    # make main playing area
-    pygame.draw.rect(gamedis, black, game_area)
+    # Start hand landmarker background process
+    if not camera_on:
+        background_process = Thread(target=run)
+        background_process.start()
+        camera_on = True
 
-    # make scoreboard
+    # Make main playing area
+    pygame.draw.rect(gamedis, BLACK, game_area)
+
+    # Make scoreboard
     game_score = 0
-    pygame.draw.rect(gamedis, pink, scoreboard)
-    score_display = score_font_type.render(f"Score: {game_score}", True, black)
+    pygame.draw.rect(gamedis, PINK, scoreboard)
+    score_display = score_font_type.render(f"Score: {game_score}", True, BLACK)
     gamedis.blit(score_display, (20, 50))
 
-    # make shop
+    # Make shop
     update_shop()
 
-    # make initial snake
+    # Make initial snake
     pos_x = gamedis_width / 2 + scoreboard_width
     pos_y = gamedis_height / 2
     pos_x_change = 0
@@ -392,7 +397,7 @@ def make_game_screen():
 
 
 def update_shop():
-    pygame.draw.rect(gamedis, pale_green, shop)
+    pygame.draw.rect(gamedis, PALE_GREEN, shop)
 
     # skin 1
     skin1_icon = pygame.image.load("./ASSETS/skin1_head.png").convert()
@@ -416,10 +421,10 @@ def update_shop():
     rock2_icon = pygame.transform.scale(rock2_icon, (80, 80))
     gamedis.blit(rock2_icon, ((10 + 80 + 15), scoreboard_height + 50 + 80 + 20))
 
-    # Select Button
-    select_button = score_font_type.render("Select", True, black)
+    # Select button
+    select_button = score_font_type.render("Select", True, BLACK)
     pygame.draw.rect(
-        gamedis, purple, (10 + 20, scoreboard_height + 50 + 160 + 40, 140, 50)
+        gamedis, PURPLE, (10 + 20, scoreboard_height + 50 + 160 + 40, 140, 50)
     )
     gamedis.blit(select_button, (10 + 20 + 10, scoreboard_height + 50 + 160 + 20 + 40))
     pygame.display.update()
@@ -498,8 +503,8 @@ def game_loop(game_over):
             make_lose_screen()
             return
 
-        # Updating Snake Head
-        pygame.draw.rect(gamedis, black, game_area)
+        # Updating snake head
+        pygame.draw.rect(gamedis, BLACK, game_area)
         make_food(foodx, foody)
         snake_Head = []
         snake_Head.append(pos_x)
@@ -551,7 +556,7 @@ if (game_on and logged_in):
     game_loop(game_over)
 
 
-# Exiting the Game
+# Exiting the game
 pygame.quit()
 pygame.font.quit()
 quit()
