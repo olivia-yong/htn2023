@@ -2,7 +2,7 @@ import mediapipe as mp
 import cv2
 import pygame
 
-MODEL_PATH = "hand_landmarker.task"
+MODEL_PATH = "hand_landmarker/hand_landmarker.task"
 
 BaseOptions = mp.tasks.BaseOptions
 HandLandmarker = mp.tasks.vision.HandLandmarker

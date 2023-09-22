@@ -4,7 +4,7 @@ import requests as req
 from threading import Thread
 
 
-from hand_landmarker import run, HAND_EVENT
+from hand_landmarker.hand_landmarker import run, HAND_EVENT
 from pyfont.font import Font
 
 pygame.init()
