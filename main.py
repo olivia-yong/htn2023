@@ -302,16 +302,16 @@ def make_intro_screen():
     )
 
     # register button
-    register_x = screen_width / 2 - 62.5
-    register_y = screen_height / 2 + 160
+    register_x = screen_width / 2 - 75
+    register_y = screen_height / 2 + 100
     pygame.draw.rect(
-        gamedis, PURPLE, (screen_width / 2 - 62.5, screen_height / 2 + 160, 125, 40)
+        gamedis, PURPLE, (screen_width / 2 - 75, screen_height / 2 + 100, 150, 40)
     )
     mike_font.render(
         gamedis,
         "Register",
         screen_width / 2,
-        screen_height / 2 + 180,
+        screen_height / 2 + 120,
         WHITE,
         12,
         style="center",
@@ -374,6 +374,16 @@ def make_intro_screen():
 
                     if res["status"] == 1:
                         if res["message"] == "Incorrect password":
+                            pygame.draw.rect(
+                                gamedis,
+                                GREEN,
+                                (
+                                    0,
+                                    password_input_y - 40,
+                                    screen_width,
+                                    40,
+                                ),
+                            )
                             wrong_pass = pygame.font.SysFont(None, 25).render(
                                 res["message"], True, PURPLE
                             )
@@ -383,6 +393,16 @@ def make_intro_screen():
                             gamedis.blit(wrong_pass, text_rect)
 
                         elif res["message"] == "User does not exist":
+                            pygame.draw.rect(
+                                gamedis,
+                                GREEN,
+                                (
+                                    0,
+                                    username_input_y - 40,
+                                    screen_width,
+                                    40,
+                                ),
+                            )
                             no_user = pygame.font.SysFont(None, 25).render(
                                 res["message"], True, PURPLE
                             )
@@ -390,6 +410,7 @@ def make_intro_screen():
                                 center=(screen_width / 2, username_input_y - 20)
                             )
                             gamedis.blit(no_user, text_rect)
+                        pygame.display.update()
 
                     if res["status"] == 0:
                         print(res["data"])
@@ -397,7 +418,7 @@ def make_intro_screen():
                         return True
 
                 if (
-                    (register_x <= mouse[0] <= register_x + 125)
+                    (register_x <= mouse[0] <= register_x + 150)
                     and (register_y <= mouse[1] <= register_y + 40)
                     and (username_input_active or password_input_active)
                 ):
@@ -413,6 +434,16 @@ def make_intro_screen():
 
                     if res["status"] == 1:
                         if res["message"] == "Username already exists":
+                            pygame.draw.rect(
+                                gamedis,
+                                GREEN,
+                                (
+                                    0,
+                                    username_input_y - 40,
+                                    screen_width,
+                                    40,
+                                ),
+                            )
                             user_exists = pygame.font.SysFont(None, 25).render(
                                 res["message"], True, PURPLE
                             )
@@ -420,6 +451,7 @@ def make_intro_screen():
                                 center=(screen_width / 2, username_input_y - 20)
                             )
                             gamedis.blit(user_exists, text_rect)
+                        pygame.display.update()
 
                     if res["status"] == 0:
                         print(res["data"])
