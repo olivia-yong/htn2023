@@ -138,6 +138,7 @@ def make_food(foodx, foody):
 def make_lose_screen():
     global game_over
     global window_over
+    global coins
     pygame.mouse.set_visible(True)
     pygame.draw.rect(gamedis, BLACK, game_area)
     mike_font.render(
@@ -220,6 +221,16 @@ def make_lose_screen():
         12,
         style="center",
     )
+
+    # Update coins
+    res = req.get(
+        BASE_URL + "/get_coins",
+        json={"username": username},
+        headers={"Content-Type": "application/json"},
+    ).json()
+    coins = res["data"]
+    update_shop()
+
     pygame.display.update()
 
     while window_over == False:
@@ -517,6 +528,7 @@ def make_game_screen():
     global pos_y_change
     global game_score
     global camera_on
+    global coins
 
     # Start hand landmarker background process
     if not camera_on:
@@ -543,6 +555,14 @@ def make_game_screen():
         style="center",
     )
 
+    # Get user coins
+    res = req.get(
+        BASE_URL + "/get_coins",
+        json={"username": username},
+        headers={"Content-Type": "application/json"},
+    ).json()
+    coins = res["data"]
+
     # Make shop
     update_shop()
 
@@ -563,35 +583,47 @@ def update_shop():
     # skin 1
     skin1_icon = pygame.image.load("./ASSETS/skin1_head.png").convert()
     skin1_icon = pygame.transform.scale(skin1_icon, (80, 80))
-    gamedis.blit(skin1_icon, (10, scoreboard_height + 50))
+    gamedis.blit(skin1_icon, (10, scoreboard_height + 50 + 50))
 
     # rock 1
     rock1_icon = pygame.image.load("./ASSETS/rock1.png").convert()
     rock1_icon = pygame.transform.scale(rock1_icon, (80, 80))
-    gamedis.blit(rock1_icon, ((10 + 80 + 15), scoreboard_height + 50))
+    gamedis.blit(rock1_icon, ((10 + 80 + 15), scoreboard_height + 50 + 50))
 
     # skin 2
     skin2_icon_link = "./ASSETS/skin2_head_locked.jpg"
     skin2_icon = pygame.image.load(skin2_icon_link)
     skin2_icon = pygame.transform.scale(skin2_icon, (80, 80))
-    gamedis.blit(skin2_icon, (10, scoreboard_height + 50 + 80 + 20))
+    gamedis.blit(skin2_icon, (10, scoreboard_height + 50 + 50 + 80 + 20))
 
     # rock 2
     rock2_icon_link = "./ASSETS/rock2_locked.jpg"
     rock2_icon = pygame.image.load(rock2_icon_link)
     rock2_icon = pygame.transform.scale(rock2_icon, (80, 80))
-    gamedis.blit(rock2_icon, ((10 + 80 + 15), scoreboard_height + 50 + 80 + 20))
+    gamedis.blit(rock2_icon, ((10 + 80 + 15), scoreboard_height + 50 + 50 + 80 + 20))
 
     # Select button
     pygame.draw.rect(
-        gamedis, PURPLE, (10 + 20, scoreboard_height + 50 + 160 + 40, 140, 50)
+        gamedis, PURPLE, (10 + 20, scoreboard_height + 50 + 50 + 160 + 40, 140, 50)
     )
     mike_font.render(
         gamedis,
         "Select",
         10 + 20 + 70,
-        scoreboard_height + 50 + 160 + 40 + 25,
+        scoreboard_height + 50 + 50 + 160 + 40 + 25,
         WHITE,
+        12,
+        style="center",
+    )
+
+    # coins
+    coins_text = f"Coins - {coins}"
+    mike_font.render(
+        gamedis,
+        coins_text,
+        10 + 20 + 70,
+        scoreboard_height + 50,
+        BLACK,
         12,
         style="center",
     )
