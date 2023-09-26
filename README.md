@@ -1,4 +1,3 @@
-![image](https://github.com/olivia-yong/htn2023/assets/85356197/020cfc21-7431-434e-abc3-d8dd96a76b20)<p align="center"><img src="ASSETS/logo.png" width="150"></a></p> 
 <h2 align="center"><b>Snake Wave</b></h2>
 <h4 align="center">A simple game to test your knowledge of geography.</h4>
 
