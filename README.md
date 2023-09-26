@@ -1,3 +1,4 @@
+<p align="center"><img src="ASSETS/logo.png" width="150"></a></p> 
 <h2 align="center"><b>Snake Wave</b></h2>
 <h4 align="center">A simple game to test your knowledge of geography.</h4>
 
